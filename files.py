@@ -8,12 +8,15 @@ def create_dir (today):
 def write_in_file (file_name, companies):
     file = open(file_name, "w")
     cnt = 0
+    for stuff in companies[0]:
+      print (stuff)
     for company in companies:
       if len (company) > 0:
-        if "P/E" and "P/B" and "Price" and "Dividend" in company:
-          if (company['P/E'] < '20' and
-          company['P/B'] < '2' and
-          company['Price'] < '300' and
+        if "P/S" and "P/E" and "P/B" and "Price" and "Dividend" in company:
+          if (company['P/E'] < '25' and
+          company['P/B'] < '3' and
+          company['P/S'] < '4' and
+          company['Price'] < '500' and
           company['Dividend'] != '-' and
           company['P/E'] != '-'
           ):
