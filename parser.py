@@ -26,14 +26,13 @@ def get_all_apropriate_tickers (tickers, main_url, num, print_all):
       d['title'] = ticker
       company = d
       if len (company) > 0:
-        if "P/S" and "P/E" and "P/B" and "Price" and "Dividend" and "Sales Q/Q" in company:
+        if "P/S" and "P/E" and "P/B" and "Price"  and "Sales Q/Q" in company:
           if (company['P/E'] < '25'       and
           company['Sales Q/Q'] > '0.0%'   and
           company ['EPS this Y'] > '0.0%' and
           company['P/B'] < '3'            and
           company['P/S'] < '4'            and
           company['Price'] < '500'        and
-          company['Dividend'] != '-'      and
           company['P/E'] != '-'
           ):
             if print_all == 1:
