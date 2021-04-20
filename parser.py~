@@ -1,5 +1,4 @@
 import requests
-import sys
 from bs4 import BeautifulSoup
 def get_all_links (main_url, tickers):
     links = list()
@@ -27,18 +26,14 @@ def get_all_apropriate_tickers (tickers, main_url, num, print_all):
       d['title'] = ticker
       company = d
       if len (company) > 0:
-        # print ('pe', company['P/E'])
-        # print ('sales', company['Sales Q/Q'][:-1])
-        # print ('eps', company ['EPS this Y'][:-1])
-        # print ('pb', company['P/B'])
-        # print ('ps', company['P/S'])
         if "P/S" and "P/E" and "P/B" and "Price"  and "Sales Q/Q" in company:
-          if (float (company['P/E']) < 35                               and
-              float (company['Sales Q/Q'][:-1]) > 0                     and
-              float (company ['EPS this Y'][:-1]) > 0                   and
-              float (company['P/B']) < 3                                and
-              float (company['P/S']) < 4                                #and
-           #   company['Sales Q/Q']  > company['Sales past5Y']
+          if (company['P/E'] < '25'       and
+          company['Sales Q/Q'] > '0.0%'   and
+          company ['EPS this Y'] > '0.0%' and
+          company['P/B'] < '3'            and
+          company['P/S'] < '4'            and
+          company['Price'] < '500'        and
+          company['P/E'] != '-'
           ):
             if print_all == 1:
               print_stuff (company)
@@ -51,21 +46,18 @@ def get_all_apropriate_tickers (tickers, main_url, num, print_all):
             # file.write (" Price = ")
             # file.write (company['Price'])
             # file.write ("\n")
-    except Exception as e: sys.stderr.write(str (e) + "\n")
+    except:
+      print("Couldn't do something with", ticker)
 
 def get_html (url):
   headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Max OS X 10.16; rv:86.0) Gecko/20100101 Firefox/86.0'}
+  
   r = requests.get(url, headers=headers)
- # print (r.text)
+  ##print (r.text)
   return r.text         ## возвращает html - код страницы
 
 def parse_one_company(html):
-    try:
-        soup = BeautifulSoup (html, 'lxml')
-    except:
-        print ("what")
-
-
+    soup = BeautifulSoup (html, 'lxml')
     text = []
     values = []
 
