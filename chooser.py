@@ -4,5 +4,7 @@ def get_all_tickers (csv_file_name):
     with open(csv_file_name, encoding="cp1251", newline='\n') as f:
       reader = csv.DictReader(f, delimiter=';')
       for row in reader:
-        tickers.append(row['s_RTS_code'])
+         # tickers.append (row['TRADE_CODE'])
+          tickers.append(row['s_RTS_code'])
+
     return tickers

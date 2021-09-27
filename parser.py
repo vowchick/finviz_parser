@@ -1,12 +1,7 @@
-import requests
 import sys
+import fetcher
 from bs4 import BeautifulSoup
-def get_all_links (main_url, tickers):
-    links = list()
-    for ticker in tickers:
-      link_to_ticker = main_url + ticker + "&ty=c&p=d&b=1"
-      links.append(link_to_ticker)
-    return links
+
 def print_stuff (company):
   print (company['title'], end=' ')
   print ('EPS', company['EPS this Y'], end=' ')
@@ -22,7 +17,7 @@ def get_all_apropriate_tickers (tickers, main_url, num, print_all):
       break
     try:
       link_to_ticker = main_url + ticker + "&ty=c&p=d&b=1"
-      html_of_the_page = get_html(link_to_ticker)
+      html_of_the_page = fetcher.get_html(link_to_ticker)
       d = parse_one_company(html_of_the_page)
       d['title'] = ticker
       company = d
@@ -53,19 +48,10 @@ def get_all_apropriate_tickers (tickers, main_url, num, print_all):
             # file.write ("\n")
     except Exception as e: sys.stderr.write(str (e) + "\n")
 
-def get_html (url):
-  headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Max OS X 10.16; rv:86.0) Gecko/20100101 Firefox/86.0'}
-  r = requests.get(url, headers=headers)
- # print (r.text)
-  return r.text         ## возвращает html - код страницы
 
 def parse_one_company(html):
-    try:
-        soup = BeautifulSoup (html, 'lxml')
-    except:
-        print ("what")
 
-
+    soup = fetcher.get_soup (html)
     text = []
     values = []
 
