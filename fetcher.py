@@ -13,9 +13,11 @@ def get_all_links_only_spb (main_url, tickers):
     return links
 
 
-def get_all_links (main_url, cnt):
+def get_all_links (main_url, cnt, log_freq = 100):
   all_links = set ()
   for i in range (cnt):
+    if i % log_freq == 0:
+      print (str (i) + " pages parsed")
     page_link = main_url + "r=" + str (20 * i + 1)
     all_links.update (get_all_links_at_page (get_html (page_link)))
 
@@ -24,15 +26,18 @@ def get_all_links (main_url, cnt):
 def get_soup (html):
   try:
     soup = BeautifulSoup (html, 'lxml')
-  except:
-    print ("Couldn't parse")
+  except Exception as e:
+    print (e)
+    print ("what")
     soup = set ()
   return soup
 
 def get_all_links_at_page (html):
   
   soup = get_soup (html)
-  soup_set = soup.find_all ('a', class_="screener-link")
+  soup_set = set ()
+  for row in soup:
+    soup_set.update (soup.find_all ('a', class_="screener-link"))
 
   links = set (link_start + x.get ('href') for x in soup_set)
   return links

@@ -1,6 +1,9 @@
+from ast import parse
 import sys
 import fetcher
 from bs4 import BeautifulSoup
+import pandas as pd
+import numpy as np
 
 def print_stuff (company):
   print (company['title'], end=' ')
@@ -11,6 +14,7 @@ def print_stuff (company):
 
 def get_all_apropriate_tickers (tickers, main_url, num, print_all):
   cnt = 0
+  comps = dict ()
   for ticker in tickers:
     cnt += 1
     if cnt > num:
@@ -35,6 +39,7 @@ def get_all_apropriate_tickers (tickers, main_url, num, print_all):
               float (company['P/S']) < 4                                #and
            #   company['Sales Q/Q']  > company['Sales past5Y']
           ):
+            comps[ticker] = company
             if print_all == 1:
               print_stuff (company)
             else:
@@ -47,7 +52,39 @@ def get_all_apropriate_tickers (tickers, main_url, num, print_all):
             # file.write (company['Price'])
             # file.write ("\n")
     except Exception as e: sys.stderr.write(str (e) + "\n")
+  return pd.DataFrame.from_dict (comps).transpose ()
 
+def get_ticker (link):
+  start = link.index ('=')
+  end = link.index ('&')
+  return link[start + 1 : end]
+
+def parse_all_companies (links):
+  companies = dict ()
+  for link in links:
+    company = parse_one_company (fetcher.get_html (link))
+    ticker = get_ticker (link)
+    companies[ticker] = company
+  return pd.DataFrame.from_dict (companies)
+
+def crop_table (table):
+    drop_indeces = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 44, 45, 46, 47, 48, 50, 51, 52, 53, 54, 56, 57, 58, 59, 60, 61,62,63,65,66,67,68,69,70]
+    return table.drop (drop_indeces)
+
+def map_to_float (x):
+    if (x == '-'):
+        return 0.0
+    elif '%' in x:
+        return float (x[:-1])
+    else:
+        try:
+            return float (x)
+        except:
+            return x
+
+def crop_companies (companies):
+  companies = crop_table (companies)
+  companies.applymap (map_to_float)
 
 def parse_one_company(html):
 
